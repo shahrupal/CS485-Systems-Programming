@@ -5,6 +5,7 @@ int main() {
 
 	int val = 0;
 	char *line = NULL;
+	char output[1024][1024];
 	size_t size = 0;
 	int charDone = 0;
 
@@ -14,7 +15,7 @@ int main() {
 	// ALLOWS USER TO KEEP GOING UNTIL CTRL - D
 	// parse each line of user's input
 	while(getline(&line, &size, stdin) != -1){
-	
+
 		// ignores spaces in beginning of line
 		while(*line == ' ') {
 			line++;  // increment index of character array
@@ -33,11 +34,11 @@ int main() {
 				}
 	
 	
-				// COMMENTS
-	
+				// COMMENTS		
+			
 				// print all characters after "-c"
 				printf("%s", line);
-	
+
 			}
 	
 			else if(*line == 'd') {
@@ -58,6 +59,11 @@ int main() {
 				
 			char* token = strtok(line, " \n");  // splits string by space and new line
        		        while(token != NULL){
+				
+				if(token[0] == '/' && token[1] == '*'){
+					printf("BEEP BOOP COMMENT DETECted");
+				}
+//				printf("%s", token);
                 		sscanf(token, "%x", &val);  // stores numbers in val
 	                  	printf("%c", val);  // converts hex to character
        		                token = strtok(NULL, " \n");  // re-assigns token to new delimited string
