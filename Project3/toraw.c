@@ -3,6 +3,7 @@
 
 int main(){
 
+	int val = 0;
 	char *line = NULL;
 	size_t size = 0;
 
@@ -20,6 +21,7 @@ int main(){
 		line++;  // increment index of character array
 		if(*line == '-'){  // if the character is a hyphen
 			line++;  // increment index of character array
+	
 			if(*line == 'c'){  // if next character is c
 
 				line++;  // increment index of character array
@@ -31,6 +33,31 @@ int main(){
 		
 				// print all characters after "-c"
 				printf("%s", line);
+
+			}
+	
+			else if(*line == 'd'){
+				
+				line++;  // increment index of character array
+				
+				char* token = strtok(line, " \n");  // splits string by space and new line
+				while(token != NULL){
+					sscanf(token, "%d", &val);  // stores numbers in val
+					printf("%c", val);  // converts int to character
+					token = strtok(NULL, " \n");  // re-assigns token to new delimited string
+				}
+			}
+
+			else{  // assume hexadecimal
+				
+                                char* token = strtok(line, " \n");  // splits string by space and new line
+                                while(token != NULL){
+                                        sscanf(token, "%d", &val);  // stores numbers in val
+                                        printf("%c", val);  // converts int to character
+                                        token = strtok(NULL, " \n");  // re-assigns token to new delimited string
+				}				
+				
+				sscanf(token, "%x", &val);  // converts hexadecimal to character
 
 			}
 		}
