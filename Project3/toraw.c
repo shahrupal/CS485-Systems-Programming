@@ -17,57 +17,52 @@ int main(){
 	
 	// ignores spaces in beginning of line
 	while(*line == ' '){
-		
 		line++;  // increment index of character array
-		if(*line == '-'){  // if the character is a hyphen
+	}
+
+	if(*line == '-'){  // if the character is a hyphen
+		line++;  // increment index of character array
+	
+		if(*line == 'c'){  // if next character is c
+
 			line++;  // increment index of character array
-	
-			if(*line == 'c'){  // if next character is c
 
-				line++;  // increment index of character array
-
-				// ignore all spaces after "-c"
-				while(*line == ' '){
-					line++;
-				}
+			// ignore all spaces after "-c"
+			while(*line == ' '){
+				line++;
+			}
 		
-				// print all characters after "-c"
-				printf("%s", line);
+			// print all characters after "-c"
+			printf("%s", line);
 
-			}
+		}
 	
-			else if(*line == 'd'){
+		else if(*line == 'd'){
 				
-				line++;  // increment index of character array
+			line++;  // increment index of character array
 				
-				char* token = strtok(line, " \n");  // splits string by space and new line
-				while(token != NULL){
-					sscanf(token, "%d", &val);  // stores numbers in val
-					printf("%c", val);  // converts int to character
-					token = strtok(NULL, " \n");  // re-assigns token to new delimited string
-				}
-			}
-
-			else{  // assume hexadecimal
-				
-                                char* token = strtok(line, " \n");  // splits string by space and new line
-                                while(token != NULL){
-                                        sscanf(token, "%d", &val);  // stores numbers in val
-                                        printf("%c", val);  // converts int to character
-                                        token = strtok(NULL, " \n");  // re-assigns token to new delimited string
-				}				
-				
-				sscanf(token, "%x", &val);  // converts hexadecimal to character
-
+			char* token = strtok(line, " \n");  // splits string by space and new line
+			while(token != NULL){
+				sscanf(token, "%d", &val);  // stores numbers in val
+				printf("%c", val);  // converts int to character
+				token = strtok(NULL, " \n");  // re-assigns token to new delimited string
 			}
 		}
-		
-		
-
-	}	
+	}
 	
+	else{  // assume hexadecimal if no hyphen
+				
+		char* token = strtok(line, " \n");  // splits string by space and new line
+                while(token != NULL){
+                	sscanf(token, "%x", &val);  // stores numbers in val
+                  	printf("%c", val);  // converts hex to character
+                        token = strtok(NULL, " \n");  // re-assigns token to new delimited string
+		}						
 	
 
+	}
+		
+	
 	printf("end\n");
 	
 
