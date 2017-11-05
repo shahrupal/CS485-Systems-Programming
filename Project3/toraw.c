@@ -55,6 +55,7 @@ int main() {
 						while(token[0] != '*' && token[1] != '/'){
 							token = strtok(NULL, " \n");
 						}
+						token = strtok(NULL, " \n");
 					}
 
 					sscanf(token, "%d", &val);  // stores numbers in val
@@ -76,6 +77,7 @@ int main() {
 					while(token[0] != '*' & token[1] != '/'){
 						token = strtok(NULL, " \n");
 					}
+					token = strtok(NULL, " \n");
 				}
 					
 				sscanf(token, "%x", &val);  // stores numbers in val
