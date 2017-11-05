@@ -25,6 +25,11 @@ int main() {
 
 		if(*line == '-') {  // if the character is a hyphen
 			line++;  // increment index of character array
+				
+			// ignore all spaces after -
+			while(*line == ' '){
+				line++;
+			}
 	
 			if(*line == 'c') {  // if next character is c
 
