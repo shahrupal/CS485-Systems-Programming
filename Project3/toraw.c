@@ -47,12 +47,6 @@ int main() {
 					line++;
 				}
 
-				/*for(int i = 0; i < strlen(line); i++) {
-					output[len++] = line[i];
-					output[len] = '\0';
-
-				}*/
-
 				// ignore comments
 				char* token = strtok(line, "\n");  // only delimit by new line
 				for(int i = 0; i < strlen(token); i++){
@@ -65,9 +59,6 @@ int main() {
 					output[len++] = token[i];
 					output[len] = '\0';
 				}
-		
-				// print all characters after "-c"
-//				printf("%s", line);
 
 		}
 	
@@ -84,23 +75,27 @@ int main() {
 						while(token[0] != '*' && token[1] != '/') {
 							token = strtok(NULL, " \n");
 						}
+				
 						token = strtok(NULL, " \n");
+						
 					}
-
-					// print error if input is not a digit
-					for(int i = 0; i < strlen(token); i++) {
-						if(!isdigit(token[i])){
-//							printf("ERROR: NOT DECIMAL");
-							decError = 1;
-							decErrorMsg = token;
+					
+					if(token != NULL) {  // accounts for if comment ends at end of line
+						// print error if input is not a digit
+						for(int i = 0; i < strlen(token); i++) {
+							if(!isdigit(token[i])){
+//								printf("ERROR: NOT DECIMAL");
+								decError = 1;
+								decErrorMsg = token;
+							}
 						}
-					}
 
-					sscanf(token, "%d", &val);  // stores numbers in val
-//					printf("%c", val);  // converts int to character
-					output[len++] = (char)val;
-					output[len] = '\0';
-					token = strtok(NULL, " \n");  // re-assigns token to new delimited string
+						sscanf(token, "%d", &val);  // stores numbers in val
+//						printf("%c", val);  // converts int to character
+						output[len++] = (char)val;
+						output[len] = '\0';
+						token = strtok(NULL, " \n");  // re-assigns token to new delimited string
+					}
 				}
 			}
 		}
@@ -119,21 +114,22 @@ int main() {
 					token = strtok(NULL, " \n");
 				}
 
-				// print error is input is not a digit or letter (not hex - must be 2 digits/letters)
-				for(int i = 0; i < strlen(token); i++) {
-					if((!isdigit(token[i]) && !isalpha(token[i])) ||  (strlen(token) != 2)) {
-//						printf("ERROR: NOT HEX");
-						hexError = 1;
-						hexErrorMsg = token;
-					} 
-				}				
+				if(token != NULL){
+					// print error is input is not a digit or letter (not hex - must be 2 digits/letters)
+					for(int i = 0; i < strlen(token); i++) {
+						if((!isdigit(token[i]) && !isalpha(token[i])) ||  (strlen(token) != 2)) {
+//							printf("ERROR: NOT HEX");
+							hexError = 1;
+							hexErrorMsg = token;
+						} 
+					}				
 	
-				sscanf(token, "%x", &val);  // stores numbers in val
-//	                  	printf("%c", val);  // converts hex to character
-				output[len++] = (char)val;
-				output[len] = '\0';
-     		                token = strtok(NULL, " \n");  // re-assigns token to new delimited string
-
+					sscanf(token, "%x", &val);  // stores numbers in val
+//		       	           	printf("%c", val);  // converts hex to character
+					output[len++] = (char)val;
+					output[len] = '\0';
+     			                token = strtok(NULL, " \n");  // re-assigns token to new delimited string
+				}
 			}								
 
 		}
