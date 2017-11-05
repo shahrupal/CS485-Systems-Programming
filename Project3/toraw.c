@@ -5,7 +5,8 @@ int main() {
 
 	int val = 0;
 	char *line = NULL;
-	char output[1024][1024];
+	char output[1024][1024];  // array of strings
+	int i = 0;
 	size_t size = 0;
 	int charDone = 0;
 
@@ -39,7 +40,7 @@ int main() {
 				// print all characters after "-c"
 				printf("%s", line);
 
-			}
+		}
 	
 			else if(*line == 'd') {
 					
@@ -48,10 +49,19 @@ int main() {
 				char* token = strtok(line, " \n");  // splits string by space and new line
 				while(token != NULL) {
 	
+					// ignore comments
+					if(token[0] == '/' && token[1] == '*'){
+						token = strtok(NULL, " \n");
+						while(token[0] != '*' && token[1] != '/'){
+							token = strtok(NULL, " \n");
+						}
+					}
+
 					sscanf(token, "%d", &val);  // stores numbers in val
 					printf("%c", val);  // converts int to character
 					token = strtok(NULL, " \n");  // re-assigns token to new delimited string
 				}
+				printf("\n");
 			}
 		}
 	
@@ -60,20 +70,29 @@ int main() {
 			char* token = strtok(line, " \n");  // splits string by space and new line
        		        while(token != NULL){
 				
-				if(token[0] == '/' && token[1] == '*'){
-					printf("BEEP BOOP COMMENT DETECted");
+				// ignores comments
+                		if(token[0] == '/' && token[1] == '*'){
+					token = strtok(NULL, " \n");
+					while(token[0] != '*' & token[1] != '/'){
+						token = strtok(NULL, " \n");
+					}
 				}
-//				printf("%s", token);
-                		sscanf(token, "%x", &val);  // stores numbers in val
+					
+				sscanf(token, "%x", &val);  // stores numbers in val
 	                  	printf("%c", val);  // converts hex to character
        		                token = strtok(NULL, " \n");  // re-assigns token to new delimited string
-			}						
-		
+
+			}		
+
+			printf("\n");						
 
 		}
 		
 	}
-		printf("\nend\n");
+
+
+		
+	printf("\nend\n");
 	
 
 }
