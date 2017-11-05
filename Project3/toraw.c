@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdio.h>
+#include <ctype.h>
 
 int main() {
 
@@ -58,6 +59,16 @@ int main() {
 						token = strtok(NULL, " \n");
 					}
 
+					// print error if input is not a digit
+					for(int i = 0; i < strlen(token); i++){
+						if(!isdigit(token[i])){
+							printf("ERROR: NOT DECIMAL");
+						}
+					}
+				/*	else if(!isdigit(token[0])){
+						printf("ERROR");
+					}*/
+
 					sscanf(token, "%d", &val);  // stores numbers in val
 					printf("%c", val);  // converts int to character
 					token = strtok(NULL, " \n");  // re-assigns token to new delimited string
@@ -79,7 +90,14 @@ int main() {
 					}
 					token = strtok(NULL, " \n");
 				}
-					
+
+				// print error is input is not a digit or letter (not hex - must be 2 digits/letters)
+				for(int i = 0; i < strlen(token); i++){
+					if((!isdigit(token[i]) && !isalpha(token[i])) ||  (strlen(token) != 2)){
+						printf("ERROR: NOT HEX");
+					}
+				}				
+	
 				sscanf(token, "%x", &val);  // stores numbers in val
 	                  	printf("%c", val);  // converts hex to character
        		                token = strtok(NULL, " \n");  // re-assigns token to new delimited string
