@@ -53,13 +53,18 @@ int main() {
 
 				}*/
 
-
+				// ignore comments
 				char* token = strtok(line, "\n");  // only delimit by new line
 				for(int i = 0; i < strlen(token); i++){
+					if(token[i] == '/' && token[i + 1] == '*'){
+						while(token[i] != '*' || token[i + 1] != '/') {
+							i++;
+						}
+					i += 2;  // account for */
+					}
 					output[len++] = token[i];
 					output[len] = '\0';
 				}
-				// COMMENTS		
 		
 				// print all characters after "-c"
 //				printf("%s", line);
