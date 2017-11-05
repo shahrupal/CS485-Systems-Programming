@@ -13,7 +13,9 @@ int main() {
 
 	// set errors to false
 	int decError = 0;
+	char *decErrorMsg = NULL;
 	int hexError = 0;	
+	char *hexErrorMsg = NULL;
 	char output[1024] = "";
 	size_t len = 0;
 
@@ -75,6 +77,7 @@ int main() {
 						if(!isdigit(token[i])){
 //							printf("ERROR: NOT DECIMAL");
 							decError = 1;
+							decErrorMsg = token;
 						}
 					}
 
@@ -84,7 +87,6 @@ int main() {
 					output[len] = '\0';
 					token = strtok(NULL, " \n");  // re-assigns token to new delimited string
 				}
-				printf("\n");
 			}
 		}
 	
@@ -107,6 +109,7 @@ int main() {
 					if((!isdigit(token[i]) && !isalpha(token[i])) ||  (strlen(token) != 2)){
 //						printf("ERROR: NOT HEX");
 						hexError = 1;
+						hexErrorMsg = token;
 					}
 				}				
 	
@@ -116,16 +119,26 @@ int main() {
 				output[len] = '\0';
      		                token = strtok(NULL, " \n");  // re-assigns token to new delimited string
 
-			}		
-
-			printf("\n");						
+			}								
 
 		}
 		
 	}
-		
-	for(int k = 0; k < 1024; k++){
-		printf("%c", output[k]);
+	
+	if(decError == 1 && hexError == 1){
+		printf("ERROR: %s is not a decimal number.", decErrorMsg); 
+		printf("ERROR: %s is not a hexadecimal number.", hexErrorMsg);
+	}	
+	else if(decError == 1){
+		printf("ERROR: %s is not a decimal number.", decErrorMsg);
+	}
+	else if(hexError == 1){
+		printf("ERROR: %s is not a hexadecimal number.", hexErrorMsg);
+	}
+	else{
+		for(int k = 0; k < 1024; k++){
+			printf("%c", output[k]);
+		}
 	}
 
 	printf("\nend\n");
