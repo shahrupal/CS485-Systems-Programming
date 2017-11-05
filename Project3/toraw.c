@@ -11,6 +11,7 @@ int main() {
 		-- 'line' is an array of characters (AKA a string)
 		-- 'line++' increments the index of the array being pointed to
 		-- '*line' dereferences the current character being pointed to
+		-- 'token' is a string of characters; each token is separated by spaces or a new line (ex: ab bc cd -> the first token is "ab")
 	 */
 
 	// used to store each line of input 
@@ -135,7 +136,7 @@ int main() {
                 		if(token[0] == '/' && token[1] == '*') {  // if beginning of comment is detected
 
 					token = strtok(NULL, " \n");  // go to next token
-					while(token[0] != '*' & token[1] != '/') {  // until token is end of comment
+					while(token[0] != '*' && token[1] != '/') {  // until token is end of comment
 						token = strtok(NULL, " \n");  // go to next token
 					}
 
@@ -184,7 +185,6 @@ int main() {
 		}
 	}
 
-	printf("\nend\n");
+	printf("\n");
 	
-
 }
