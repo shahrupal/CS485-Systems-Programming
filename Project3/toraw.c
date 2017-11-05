@@ -6,7 +6,6 @@ int main() {
 
 	int val = 0;
 	char *line = NULL;
-//	char output[1024];  // array of strings
 	int index = 0;
 	size_t size = 0;
 	int charDone = 0;
@@ -35,7 +34,7 @@ int main() {
 			line++;  // increment index of character array
 				
 			// ignore all spaces after -
-			while(*line == ' '){
+			while(*line == ' ') {
 				line++;
 			}
 	
@@ -47,12 +46,23 @@ int main() {
 				while(*line == ' ') {
 					line++;
 				}
-	
-	
+
+				/*for(int i = 0; i < strlen(line); i++) {
+					output[len++] = line[i];
+					output[len] = '\0';
+
+				}*/
+
+
+				char* token = strtok(line, "\n");  // only delimit by new line
+				for(int i = 0; i < strlen(token); i++){
+					output[len++] = token[i];
+					output[len] = '\0';
+				}
 				// COMMENTS		
-			
+		
 				// print all characters after "-c"
-				printf("%s", line);
+//				printf("%s", line);
 
 		}
 	
@@ -64,16 +74,16 @@ int main() {
 				while(token != NULL) {
 	
 					// ignore comments
-					if(token[0] == '/' && token[1] == '*'){
+					if(token[0] == '/' && token[1] == '*') {
 						token = strtok(NULL, " \n");
-						while(token[0] != '*' && token[1] != '/'){
+						while(token[0] != '*' && token[1] != '/') {
 							token = strtok(NULL, " \n");
 						}
 						token = strtok(NULL, " \n");
 					}
 
 					// print error if input is not a digit
-					for(int i = 0; i < strlen(token); i++){
+					for(int i = 0; i < strlen(token); i++) {
 						if(!isdigit(token[i])){
 //							printf("ERROR: NOT DECIMAL");
 							decError = 1;
@@ -96,21 +106,21 @@ int main() {
        		        while(token != NULL){
 				
 				// ignores comments
-                		if(token[0] == '/' && token[1] == '*'){
+                		if(token[0] == '/' && token[1] == '*') { 
 					token = strtok(NULL, " \n");
-					while(token[0] != '*' & token[1] != '/'){
+					while(token[0] != '*' & token[1] != '/') {
 						token = strtok(NULL, " \n");
 					}
 					token = strtok(NULL, " \n");
 				}
 
 				// print error is input is not a digit or letter (not hex - must be 2 digits/letters)
-				for(int i = 0; i < strlen(token); i++){
-					if((!isdigit(token[i]) && !isalpha(token[i])) ||  (strlen(token) != 2)){
+				for(int i = 0; i < strlen(token); i++) {
+					if((!isdigit(token[i]) && !isalpha(token[i])) ||  (strlen(token) != 2)) {
 //						printf("ERROR: NOT HEX");
 						hexError = 1;
 						hexErrorMsg = token;
-					}
+					} 
 				}				
 	
 				sscanf(token, "%x", &val);  // stores numbers in val
@@ -125,18 +135,18 @@ int main() {
 		
 	}
 	
-	if(decError == 1 && hexError == 1){
+	if(decError == 1 && hexError == 1) {
 		printf("ERROR: %s is not a decimal number.", decErrorMsg); 
 		printf("ERROR: %s is not a hexadecimal number.", hexErrorMsg);
 	}	
-	else if(decError == 1){
+	else if(decError == 1) {
 		printf("ERROR: %s is not a decimal number.", decErrorMsg);
 	}
-	else if(hexError == 1){
+	else if(hexError == 1) {
 		printf("ERROR: %s is not a hexadecimal number.", hexErrorMsg);
 	}
-	else{
-		for(int k = 0; k < 1024; k++){
+	else {
+		for(int k = 0; k < 1024; k++) {
 			printf("%c", output[k]);
 		}
 	}
