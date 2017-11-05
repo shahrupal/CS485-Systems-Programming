@@ -1,0 +1,3 @@
+ -c   This is a /* monkey!!!! */ test!
+-d   43    /* comments are fun 45 */
+23 21 /* 24 */ 24 24 24 /* there should only be 3 dollar signs */

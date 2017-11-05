@@ -1,0 +1,2 @@
+Please start your input: 
+ERROR: 123 is not a hexadecimal number.
