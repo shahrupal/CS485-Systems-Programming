@@ -26,16 +26,21 @@ int main(){
 			tokens.push_back(temp);
 		}		
 
-		// prints vector
-//		for(int i = 0; i < tokens.size(); i++){
-//			cout << tokens[i];
-//		}
-
 		// check size of vectors to make sure appropriate number of parameters associated with specific command
 		if(tokens[0] == "set"){ 
 			
 			if(tokens.size() == 3){
-				variables.insert(pair<string,string>(tokens[1],tokens[2]));  // store variables and their values into map
+
+				// if variable already exists, override old value with new
+				for(map<string,string>::iterator it=variables.begin(); it!=variables.end(); it++){
+					if(it->first == tokens[1]){
+						it->second = tokens[2];
+					}
+				}
+				
+				// store variables and their value to map -- map accounts for repeats
+				variables.insert(pair<string,string>(tokens[1],tokens[2])); 
+
 			}
 			else{
 				cout << "The 'set' command requires 2 parameters. Use the following syntax: <set> <variable> <value>." << endl;
