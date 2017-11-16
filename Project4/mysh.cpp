@@ -27,8 +27,8 @@ int main(){
 		string temp = "";
 	
 		// splits and stores line of input by spaces into vector
-		stringstream ss(input);
-		while(getline(ss, temp, ' ')){
+		istringstream iss(input);
+		while(iss >> temp){
 			tokens.push_back(temp);
 		}		
 
@@ -97,7 +97,7 @@ int main(){
 //					chdir(dir);
 					path = getcwd(currDir,size);
 //					prompt = prompt.substr(0,prompt.length()-2) + ":" +  getcwd(currDir,size) + "$ ";
-					cout << getcwd(currDir,size) << endl;  //changes directry to absolute directory
+//					cout << getcwd(currDir,size) << endl;  //changes directry to absolute directory
 				}
 //					prompt = prompt.substr(0,prompt.length()-2) + ":" + dir + "$ ";								
 			}
