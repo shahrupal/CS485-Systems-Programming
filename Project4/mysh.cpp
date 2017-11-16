@@ -12,6 +12,7 @@ using namespace std;
 int main(){
 	
 	string input = "";
+	string path = "";
 	string prompt = "mysh$ ";
 	const char* dir;
 	char currDir[1024];
@@ -83,20 +84,28 @@ int main(){
 		 }
 		else if(tokens[0] == "cd"){
 
-			string temp = tokens[1];  
+			if(tokens.size() == 2){
+				string temp = tokens[1];  
 
-			// change directory to given input
-			dir = tokens[1].c_str();   
-//			chdir(dir);  
-
-			if(chdir(dir) != 0){
-				cout << "Invalid directory!" << endl;
+				// change directory to given input
+				dir = tokens[1].c_str();     
+	
+				if(chdir(dir) != 0){
+					cout << "Invalid directory!" << endl;
+				}
+				else{
+//					chdir(dir);
+					path = getcwd(currDir,size);
+//					prompt = prompt.substr(0,prompt.length()-2) + ":" +  getcwd(currDir,size) + "$ ";
+					cout << getcwd(currDir,size) << endl;  //changes directry to absolute directory
+				}
+//					prompt = prompt.substr(0,prompt.length()-2) + ":" + dir + "$ ";								
 			}
 			else{
-				chdir(dir);
-				cout << getcwd(currDir,size) << endl;  //changes directry to absolute directory
+				cout << "The 'cd' command requires 1 paremeter. Use the following syntax: <cd> <path>." << endl;
 			}
-//				prompt = prompt.substr(0,prompt.length()-2) + ":" + dir + "$ ";								
+			
+
 
 		 }
 		else if(tokens[0] == "listp"){ }
@@ -110,7 +119,7 @@ int main(){
 			cout << "Command not found. Please try again." << endl;
 		}
 
-		cout << prompt;
+		cout << path << prompt;
 
 	}
 
