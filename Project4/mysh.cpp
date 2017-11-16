@@ -5,6 +5,7 @@
 #include <string>
 #include <sstream>
 #include <map>
+#include <unistd.h>
 
 using namespace std;
 
@@ -12,6 +13,9 @@ int main(){
 	
 	string input = "";
 	string prompt = "mysh$ ";
+	const char* dir;
+	char currDir[1024];
+	size_t size = 1024;
 	map<string,string> variables;
 
 	cout << "ur wish is my command:" << endl;	
@@ -77,7 +81,24 @@ int main(){
 			}
 	
 		 }
-		else if(tokens[0] == "cd"){ }
+		else if(tokens[0] == "cd"){
+
+			string temp = tokens[1];  
+
+			// change directory to given input
+			dir = tokens[1].c_str();   
+//			chdir(dir);  
+
+			if(chdir(dir) != 0){
+				cout << "Invalid directory!" << endl;
+			}
+			else{
+				chdir(dir);
+				cout << getcwd(currDir,size) << endl;  //changes directry to absolute directory
+			}
+//				prompt = prompt.substr(0,prompt.length()-2) + ":" + dir + "$ ";								
+
+		 }
 		else if(tokens[0] == "listp"){ }
 		else if(tokens[0] == "bye"){ 
 			break; 
