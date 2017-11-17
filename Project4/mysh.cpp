@@ -7,6 +7,8 @@
 #include <map>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <sys/types.h>
+#include <signal.h>
 
 using namespace std;
 
@@ -24,6 +26,8 @@ int main(){
 	map<string,string> variables;
 	pid_t pid;
 	bool background = false;
+	vector<pid_t> processes;
+
 
 	cout << "ur wish is my command:" << endl;	
 	cout << prompt;
@@ -115,7 +119,13 @@ int main(){
 			}
 			
 		}
-		else if(tokens[0] == "listp"){ }
+		else if(tokens[0] == "listp"){
+			
+			for(int i = 0; i < processes.size(); i++){
+				cout << processes[i] << endl;
+			}
+
+		}
 
 		else if(tokens[0] == "bye"){ 
 			break; 
@@ -125,7 +135,6 @@ int main(){
 		
 			if(tokens[tokens.size()-1] == "&"){
 				background = true;
-				tokens[tokens.size()-1] = "";
 			}
 			
 
@@ -142,13 +151,21 @@ int main(){
 				execv(argv[0],(char* const*)argv);			    	        		 
 			}
 			else{
+				
+				// foreground process
 				if(!background){
 					int status;
 					if(waitpid(pid,&status,0) < 0)	{
 						cout << "Program is non-existent." << endl;
 					}
 				}
-			}			
+				else{
+					// if process exists
+					if(kill(pid,0) == 0){
+						processes.push_back(pid);  // stores process id's
+					}
+				}
+			}		
 
 		}
 
