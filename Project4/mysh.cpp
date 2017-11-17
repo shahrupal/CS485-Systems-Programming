@@ -10,6 +10,9 @@
 using namespace std;
 
 int main(){
+
+
+	/* ignore everything after % -- if token == %, break*/
 	
 	string input = "";
 	string path = "";
@@ -18,6 +21,8 @@ int main(){
 	char currDir[1024];
 	size_t size = 1024;
 	map<string,string> variables;
+	pid_t pid;
+	bool background = false;
 
 	cout << "ur wish is my command:" << endl;	
 	cout << prompt;
@@ -71,7 +76,7 @@ int main(){
 				cout << "The 'show' command requires 1 parameter. Use the following syntax: <show> <variable>." << endl;
 			}
 
-		 }
+		}
 		else if(tokens[0] == "setprompt"){
 				
 			if(tokens.size() == 2){
@@ -81,7 +86,7 @@ int main(){
 				cout << "The 'setprompt' command requires 1 parameter. Use the following syntax: <setprompt> <string>." << endl;
 			}
 	
-		 }
+		}
 		else if(tokens[0] == "cd"){
 
 			if(tokens.size() == 2){
@@ -89,17 +94,18 @@ int main(){
 
 				// change directory to given input
 				dir = tokens[1].c_str();     
-	
 				if(chdir(dir) != 0){
+
+					// chdir changes directory and outputs 0 if executed successfully
 					cout << "Invalid directory!" << endl;
+
 				}
 				else{
-//					chdir(dir);
+					
+					// output current directory
 					path = getcwd(currDir,size);
-//					prompt = prompt.substr(0,prompt.length()-2) + ":" +  getcwd(currDir,size) + "$ ";
-//					cout << getcwd(currDir,size) << endl;  //changes directry to absolute directory
-				}
-//					prompt = prompt.substr(0,prompt.length()-2) + ":" + dir + "$ ";								
+
+				}	
 			}
 			else{
 				cout << "The 'cd' command requires 1 paremeter. Use the following syntax: <cd> <path>." << endl;
@@ -107,16 +113,30 @@ int main(){
 			
 
 
-		 }
+		}
 		else if(tokens[0] == "listp"){ }
+
 		else if(tokens[0] == "bye"){ 
 			break; 
 		}
-		else if(tokens[0] == "cmd") {
-			 // two options 
-		}
-		else {
-			cout << "Command not found. Please try again." << endl;
+
+		else{
+		
+			if(tokens[tokens.size()-1] == "&"){
+				background = true;
+			}
+			
+			const char* argv[1024];
+			
+			for(int i = 0; i < tokens.size(); i++){
+				argv[i] = tokens[i].c_str();
+			}
+	
+			pid = fork();
+			if(pid == 0){
+				execv(argv[0],(char* const*)argv);			    	        		 
+			}			
+	
 		}
 
 		cout << path << prompt;
