@@ -6,6 +6,7 @@
 #include <sstream>
 #include <map>
 #include <unistd.h>
+#include <sys/wait.h>
 
 using namespace std;
 
@@ -27,6 +28,8 @@ int main(){
 	cout << "ur wish is my command:" << endl;	
 	cout << prompt;
 	while(getline(cin, input)){
+
+		path = getcwd(currDir,size);
 
 		vector<string> tokens;
 		string temp = "";
@@ -111,8 +114,6 @@ int main(){
 				cout << "The 'cd' command requires 1 paremeter. Use the following syntax: <cd> <path>." << endl;
 			}
 			
-
-
 		}
 		else if(tokens[0] == "listp"){ }
 
@@ -124,19 +125,31 @@ int main(){
 		
 			if(tokens[tokens.size()-1] == "&"){
 				background = true;
+				tokens[tokens.size()-1] = "";
 			}
 			
+
 			const char* argv[1024];
-			
+		
 			for(int i = 0; i < tokens.size(); i++){
-				argv[i] = tokens[i].c_str();
+				if(tokens[tokens.size()-1] != "&"){
+					argv[i] = tokens[i].c_str();
+				}
 			}
-	
+
 			pid = fork();
 			if(pid == 0){
 				execv(argv[0],(char* const*)argv);			    	        		 
+			}
+			else{
+				if(!background){
+					int status;
+					if(waitpid(pid,&status,0) < 0)	{
+						cout << "Program is non-existent." << endl;
+					}
+				}
 			}			
-	
+
 		}
 
 		cout << path << prompt;
@@ -147,3 +160,4 @@ int main(){
 	return 0;
 
 }
+
