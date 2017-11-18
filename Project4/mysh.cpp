@@ -1,5 +1,6 @@
 #include <iostream>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <vector>
 #include <string>
@@ -13,8 +14,7 @@
 using namespace std;
 
 int main(){
-
-
+	
 	/* ignore everything after % -- if token == %, break*/
 	
 	string input = "";
@@ -36,6 +36,10 @@ int main(){
 		path = getcwd(currDir,size);
 
 		vector<string> tokens;
+		cout << "back to the beginning boi" << endl;
+	
+		cout << "TOKENS CONTENT: " << endl;
+		
 		string temp = "";
 	
 		// splits and stores line of input by spaces into vector
@@ -43,6 +47,10 @@ int main(){
 		while(iss >> temp){
 			tokens.push_back(temp);
 		}		
+		
+		for(int i=0; i<tokens.size(); i++){
+			cout << tokens[i] << endl;
+		}
 
 		// check size of vectors to make sure appropriate number of parameters associated with specific command
 		if(tokens[0] == "set"){ 
@@ -128,6 +136,8 @@ int main(){
 		}
 
 		else if(tokens[0] == "bye"){ 
+			exit(EXIT_FAILURE);
+			cout << "BYE BYE BITCHEZZZZ" << endl;
 			break; 
 		}
 
@@ -138,17 +148,28 @@ int main(){
 			}
 			
 
-			const char* argv[1024];
+			const char* argv[1024] = {};
+			int argvSize = 0;
 		
 			for(int i = 0; i < tokens.size(); i++){
-				if(tokens[tokens.size()-1] != "&"){
+//				if(tokens[tokens.size()-1] != "&"){
+//					argv[i] = tokens[i].c_str();
+//				}
+				if(tokens[i] != "&"){
 					argv[i] = tokens[i].c_str();
+					argvSize++;
 				}
 			}
 
 			pid = fork();
 			if(pid == 0){
-				execv(argv[0],(char* const*)argv);			    	        		 
+				//if slash
+				if(argv[0] == "/" || argv[1] == "/"){
+					execv(argv[0],(char* const*)argv);
+				}
+				else{
+					execvp(argv[0],(char* const*)argv);
+				} 
 			}
 			else{
 				
@@ -165,9 +186,17 @@ int main(){
 						processes.push_back(pid);  // stores process id's
 					}
 				}
-			}		
+			}
+
+		
+
+				
 
 		}
+		background = false;
+		cout << "test" << endl;
+		tokens.clear();
+	
 
 		cout << path << prompt;
 
@@ -177,4 +206,5 @@ int main(){
 	return 0;
 
 }
+
 
