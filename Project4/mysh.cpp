@@ -1,5 +1,6 @@
 #include <iostream>
 #include <stdio.h>
+#include <cstdlib>
 #include <stdlib.h>
 #include <string.h>
 #include <vector>
@@ -15,45 +16,53 @@ using namespace std;
 
 int main(){
 	
-	/* ignore everything after % -- if token == %, break*/
-	
+	/* initialize variables */
 	string input = "";
 	string path = "";
 	string prompt = "mysh$ ";
+
 	const char* dir;
 	char currDir[1024];
 	size_t size = 1024;
-	map<string,string> variables;
-	pid_t pid;
+		
 	bool background = false;
-	vector<pid_t> processes;
+
+	pid_t pid;
+
+	map<string,string> variables;
+	map<pid_t,string> process;
 
 
-	cout << "ur wish is my command:" << endl;	
+
+	/* output default prompt */
 	cout << prompt;
+
+
+	/* parse through user's line of input */
 	while(getline(cin, input)){
 
-		path = getcwd(currDir,size);
+		// get current directors path
+		path = getcwd(currDir,size); 
 
 		vector<string> tokens;
-		cout << "back to the beginning boi" << endl;
-	
-		cout << "TOKENS CONTENT: " << endl;
-		
 		string temp = "";
 	
 		// splits and stores line of input by spaces into vector
 		istringstream iss(input);
-		while(iss >> temp){
-			tokens.push_back(temp);
-		}		
-		
-		for(int i=0; i<tokens.size(); i++){
-			cout << tokens[i] << endl;
-		}
 
-		// check size of vectors to make sure appropriate number of parameters associated with specific command
-		if(tokens[0] == "set"){ 
+		while(iss >> temp){
+		
+			if(temp == "%"){ break;	}  // ignore comments
+			tokens.push_back(temp);  // add tokens to vector
+
+		}				
+
+
+		// ACCOUNT FOR EMPTY LINE
+		if(tokens.empty()){ }	
+
+		// SET COMMAND
+		else if(tokens[0] == "set"){ 
 			
 			if(tokens.size() == 3){
 
@@ -74,6 +83,8 @@ int main(){
 
 
 		}
+
+		// SHOW COMMAND
 		else if(tokens[0] == "show"){
 		
 			if(tokens.size() == 2){
@@ -82,29 +93,36 @@ int main(){
 				if(variables.find(tokens[1]) == variables.end()){
 					cout << "Variable was not assigned a value." << endl;
 				}
+
 				// if variable in map, print out value associated with variable
 				else{
 					cout << variables.find(tokens[1])->second << endl;
 				}
+
 			}
 			else{
 				cout << "The 'show' command requires 1 parameter. Use the following syntax: <show> <variable>." << endl;
 			}
 
 		}
+
+		// SET PROMPT COMMAND
 		else if(tokens[0] == "setprompt"){
 				
 			if(tokens.size() == 2){
-				prompt = tokens[1] + "$ ";
+				prompt = tokens[1] + "$ ";  // set prompt to user's input 
 			}	
 			else{
 				cout << "The 'setprompt' command requires 1 parameter. Use the following syntax: <setprompt> <string>." << endl;
 			}
 	
 		}
+
+		// CHANGE DIRECTORY COMMAND
 		else if(tokens[0] == "cd"){
 
 			if(tokens.size() == 2){
+
 				string temp = tokens[1];  
 
 				// change directory to given input
@@ -127,43 +145,58 @@ int main(){
 			}
 			
 		}
+
+		// LIST PROCESSES COMMAND
 		else if(tokens[0] == "listp"){
-			
-			for(int i = 0; i < processes.size(); i++){
-				cout << processes[i] << endl;
+
+
+			// loop through processes- if still existent, output name of process to user
+			for(map<pid_t,string>::iterator it=process.begin(); it!=process.end(); it++){		
+				int stat;
+				if(!waitpid(it->first,&stat,WNOHANG)){
+					cout << it->second << endl;
+				}	
 			}
 
 		}
 
+		// BYE COMMAND
 		else if(tokens[0] == "bye"){ 
+
+			// end program
 			exit(EXIT_FAILURE);
-			cout << "BYE BYE BITCHEZZZZ" << endl;
 			break; 
+
 		}
 
+		// MISCELLANEOUS COMMANDS
 		else{
 		
+			// if user enters ampersand, background process
 			if(tokens[tokens.size()-1] == "&"){
 				background = true;
 			}
 			
 
+			// intialize array to store tokens
 			const char* argv[1024] = {};
 			int argvSize = 0;
 		
+			// store all tokens in an array (except for ampersand)
 			for(int i = 0; i < tokens.size(); i++){
-//				if(tokens[tokens.size()-1] != "&"){
-//					argv[i] = tokens[i].c_str();
-//				}
 				if(tokens[i] != "&"){
 					argv[i] = tokens[i].c_str();
 					argvSize++;
 				}
 			}
 
+			// fork the process into parent and child
 			pid = fork();
+
+			// if the process is the child
 			if(pid == 0){
-				//if slash
+
+				// execute the first token (command)
 				if(argv[0] == "/" || argv[1] == "/"){
 					execv(argv[0],(char* const*)argv);
 				}
@@ -171,33 +204,36 @@ int main(){
 					execvp(argv[0],(char* const*)argv);
 				} 
 			}
+			// if the process is not the child
 			else{
 				
 				// foreground process
 				if(!background){
+
+					// wait for process to be over before prompting for a new command
 					int status;
 					if(waitpid(pid,&status,0) < 0)	{
 						cout << "Program is non-existent." << endl;
 					}
+
 				}
+				// background process
 				else{
-					// if process exists
+					// store existent processes in map
 					if(kill(pid,0) == 0){
-						processes.push_back(pid);  // stores process id's
-					}
-				}
+						process[pid] = argv[0];
+					}		
+ 				} 
+
 			}
 
-		
-
-				
-
 		}
+
+		// reset variables
 		background = false;
-		cout << "test" << endl;
 		tokens.clear();
 	
-
+		// output current directory path and prompt
 		cout << path << prompt;
 
 	}
