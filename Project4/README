@@ -1,0 +1,34 @@
+Author: Rupal Shah
+Submission Date: 11/19/2017
+
+Makefile
+  - compiles mysh.cpp
+
+mysh.cpp
+  - creates a mini-shell program
+  - allows user to input the following:
+      + set variable value  -- sets variable value
+      + show variable  -- outputs variable value
+      + setprompt newPrompt  -- changes prompt name
+      + cd directoryName  -- changes directories
+      + listp  -- lists existing processes
+      + bye  -- exits the shell
+      + cmd param*  -- runs the process in the foreground
+      + cmd param* &  -- runs processes in the background
+  - shows directory path
+  - outputs errors
+      + not correct amount of parameters
+      + not an existent command
+
+boop.cpp
+  - sleeps for 5 seconds, then outputs text
+  - used to test background and foreground 
+
+test
+  - directory within currect directory
+  - used for testing changing directories
+
+
+
+Limitations:
+  - in some cases, shell requires user to input "bye" multiple times before program quits  

@@ -198,10 +198,14 @@ int main(){
 
 				// execute the first token (command)
 				if(argv[0] == "/" || argv[1] == "/"){
-					execv(argv[0],(char* const*)argv);
+					if(execv(argv[0],(char* const*)argv) == -1){
+						cout << "Invalid command." << endl;
+					}
 				}
 				else{
-					execvp(argv[0],(char* const*)argv);
+					if(execvp(argv[0],(char* const*)argv) == -1){
+						cout << "Invalid command." << endl;
+					}
 				} 
 			}
 			// if the process is not the child
