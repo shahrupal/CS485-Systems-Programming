@@ -16,7 +16,9 @@ struct clientMsg {
 int main(int argc, char **argv) 
 {
     int clientfd, port, key;
-    char *host, buf[MAXLINE];
+    char *host;
+    char fileName[80];
+
     string input = "";
     rio_t rio;
 
@@ -24,9 +26,11 @@ int main(int argc, char **argv)
 	fprintf(stderr, "usage: %s <ServerName> <TCPport> <SecretKey>\n", argv[0]);
 	exit(0);
     }
+
     host = argv[1];
     port = atoi(argv[2]);
     key = atoi(argv[3]);
+    
 
     clientfd = Open_clientfd(host, port);
     Rio_readinitb(&rio, clientfd);
@@ -45,15 +49,16 @@ int main(int argc, char **argv)
 	if(tokens.empty()) { }
 	else if(tokens[0] == "cput"){
 
-		cm.type = 0;
+		cm.type = 1;
 		cm.k = key;
 
-		const char* file = tokens[1].c_str();
+		strcpy(fileName,tokens[1].c_str());
+
 		struct stat statStruct;
 		int fileDesc;
 		int size = 0;
 		
-		fileDesc = open(file, O_RDONLY);
+		fileDesc = open(fileName, O_RDONLY);
 
 		if(fileDesc < 0){
 			cout << "File not found. " << endl;
@@ -70,7 +75,9 @@ int main(int argc, char **argv)
 		
 		// second param: what you are passing
 		Rio_writen(clientfd, &cm, size); // send struct
-		Rio_writen(clientfd, &file, 80);
+
+		cout << "file: " << fileName << endl;
+		Rio_writen(clientfd, &fileName, 80);
 	}
 
 	

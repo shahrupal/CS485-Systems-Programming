@@ -31,7 +31,7 @@ int main(int argc, char **argv)
     struct sockaddr_storage clientaddr;
     char client_hostname[MAXLINE], client_port[MAXLINE];
     string req_type, list_line;
-    request req; 
+    request req;                // request struct from client
 
 
     if (argc != 3) {

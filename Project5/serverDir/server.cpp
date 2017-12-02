@@ -17,6 +17,7 @@ int main(int argc, char **argv)
     struct sockaddr_in clientaddr;
     struct hostent *hp;
    
+
     char *haddrp;
     if (argc != 2) {
 	fprintf(stderr, "usage: %s <port>\n", argv[0]);
@@ -39,20 +40,21 @@ int main(int argc, char **argv)
 
 
 	/* ~~~~~~~~~~~~~~~~~~ MY CODE ~~~~~~~~~~~~~~~~~~ */
-	
-	const char* file;
 
+	char filename[80]; 
+	
 	// receive struct
 	Rio_readn(connfd, &rm, 8);
 	cout << "type: " << rm.type << endl;
 	cout << "key: " << rm.k << endl;
 
 	// if "cput"
-	if(rm.type == 0){
+	if(rm.type == 1){
 	
 		// receive file size
-		Rio_readn(connfd, &file, 80);
-		cout << "file: " << file << endl;
+		Rio_readn(connfd, &filename, 80);
+		string f(filename);
+		cout << "file: " << f << endl;
 	
 	}
 
