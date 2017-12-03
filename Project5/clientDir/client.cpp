@@ -11,13 +11,14 @@ extern "C" {
 struct clientMsg {
    int type;
    unsigned int k;
+   unsigned int bytes;
+   char fileName[80];
 } cm;
 
 int main(int argc, char **argv) 
 {
     int clientfd, port, key;
     char *host;
-    char fileName[80];
 
     string input = "";
     rio_t rio;
@@ -52,13 +53,13 @@ int main(int argc, char **argv)
 		cm.type = 1;
 		cm.k = key;
 
-		strcpy(fileName,tokens[1].c_str());
+		strcpy(cm.fileName,tokens[1].c_str());
 
 		struct stat statStruct;
 		int fileDesc;
 		int size = 0;
 		
-		fileDesc = open(fileName, O_RDONLY);
+		fileDesc = open(cm.fileName, O_RDONLY);
 
 		if(fileDesc < 0){
 			cout << "File not found. " << endl;
@@ -66,7 +67,7 @@ int main(int argc, char **argv)
 		}
 		else{
 			if(fstat(fileDesc, &statStruct) == 0){
-				size = statStruct.st_size;
+				size = statStruct.st_size; // size of file
 			}
 			else{
 				cout << "Error: fstat()" << endl;
@@ -74,10 +75,13 @@ int main(int argc, char **argv)
 		}
 		
 		// second param: what you are passing
-		Rio_writen(clientfd, &cm, size); // send struct
+//		Rio_writen(clientfd, &cm, size); // send struct
+//		cout << "file: " << cm.fileName << endl;
 
-		cout << "file: " << fileName << endl;
-		Rio_writen(clientfd, &fileName, 80);
+		Rio_writen(clientfd, &cm.type, 4);
+		Rio_writen(clientfd, &cm.k, 4);
+		Rio_writen(clientfd, &cm.fileName, 80);
+
 	}
 
 	

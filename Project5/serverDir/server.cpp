@@ -8,6 +8,8 @@ extern "C" {
 struct receiveMsg{
 	int type;
 	unsigned int k;
+	unsigned int bytes;
+	char fileName[80];
 } rm;
 
 int main(int argc, char **argv) 
@@ -41,20 +43,20 @@ int main(int argc, char **argv)
 
 	/* ~~~~~~~~~~~~~~~~~~ MY CODE ~~~~~~~~~~~~~~~~~~ */
 
-	char filename[80]; 
-	
 	// receive struct
-	Rio_readn(connfd, &rm, 8);
+	Rio_readn(connfd, &rm.type, 4);
 	cout << "type: " << rm.type << endl;
+	Rio_readn(connfd, &rm.k, 4);
 	cout << "key: " << rm.k << endl;
 
 	// if "cput"
 	if(rm.type == 1){
 	
 		// receive file size
-		Rio_readn(connfd, &filename, 80);
-		string f(filename);
-		cout << "file: " << f << endl;
+		Rio_readn(connfd, &rm.fileName, 80);
+		cout << "file: " << rm.fileName << endl;
+//		Rio_readn(connfd, &rm.bytes, 4);
+//		cout << "bytes: " << rm.bytes << endl;
 	
 	}
 
