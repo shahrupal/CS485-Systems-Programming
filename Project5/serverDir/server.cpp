@@ -55,8 +55,8 @@ int main(int argc, char **argv)
 		// receive file size
 		Rio_readn(connfd, &rm.fileName, 80);
 		cout << "file: " << rm.fileName << endl;
-//		Rio_readn(connfd, &rm.bytes, 4);
-//		cout << "bytes: " << rm.bytes << endl;
+		Rio_readn(connfd, &rm.bytes, 4);
+		cout << "bytes: " << rm.bytes << endl;
 	
 	}
 

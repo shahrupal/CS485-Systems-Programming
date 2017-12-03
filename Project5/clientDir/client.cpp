@@ -68,6 +68,7 @@ int main(int argc, char **argv)
 		else{
 			if(fstat(fileDesc, &statStruct) == 0){
 				size = statStruct.st_size; // size of file
+				cm.bytes = size;
 			}
 			else{
 				cout << "Error: fstat()" << endl;
@@ -81,6 +82,7 @@ int main(int argc, char **argv)
 		Rio_writen(clientfd, &cm.type, 4);
 		Rio_writen(clientfd, &cm.k, 4);
 		Rio_writen(clientfd, &cm.fileName, 80);
+		Rio_writen(clientfd, &cm.bytes, 4);
 
 	}
 
