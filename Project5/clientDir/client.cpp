@@ -104,7 +104,18 @@ int main(int argc, char **argv)
 		Rio_readn(clientfd, &cm.bytes, 4);
 		Rio_readn(clientfd, &cm.file, cm.bytes);
 		fwrite(cm.file, 1, cm.bytes, f);
-		fclose(f);
+		fclose(f);	
+
+	}
+	else if(tokens[0] == "cdelete"){
+		
+		cm.type = 3;
+		cm.k = key;
+
+		strcpy(cm.fileName,tokens[1].c_str());
+		Rio_writen(clientfd, &cm.type, 4);
+		Rio_writen(clientfd, &cm.k, 4);
+		Rio_writen(clientfd, &cm.fileName, 80);
 		
 
 	}

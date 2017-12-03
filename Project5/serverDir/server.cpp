@@ -97,9 +97,10 @@ int main(int argc, char **argv)
 		fread(rm.file, 1, rm.bytes, f);
 		Rio_writen(connfd, &rm.file, rm.bytes);
 		fclose(f);
-		
-		
-
+	}
+	else if(rm.type == 3){
+		Rio_readn(connfd, &rm.fileName, 80);
+		remove(rm.fileName);
 	}
 
 	Close(connfd);
