@@ -44,7 +44,6 @@ int main(int argc, char **argv)
 
 	/* ~~~~~~~~~~~~~~~~~~ MY CODE ~~~~~~~~~~~~~~~~~~ */
 	
-	FILE* f;
 
 	// receive struct
 	Rio_readn(connfd, &rm.type, 4);
@@ -62,11 +61,45 @@ int main(int argc, char **argv)
 		cout << "bytes: " << rm.bytes << endl;
 
 		Rio_readn(connfd, &rm.file, rm.bytes);
-		f = fopen(rm.fileName, "w");
+		
+		// creates file with given name and contents
+		FILE* f = fopen(rm.fileName, "w");
 		fwrite(rm.file, 1, rm.bytes, f);
 		fclose(f);
-		cout << "data: " << rm.file << endl;
 	
+	}
+	else if(rm.type == 2){
+	
+		struct stat statStruct;
+		int fileDesc;
+		int size = 0;
+		
+		Rio_readn(connfd, &rm.fileName, 80);
+		fileDesc = open(rm.fileName, O_RDONLY);
+
+		if(fileDesc < 0){
+			cout << "File not found." << endl;
+		}
+		else{
+			if(fstat(fileDesc, &statStruct) == 0){
+				size = statStruct.st_size;
+				rm.bytes = size;
+			}
+			else{
+				cout << "Error: fstat()" << endl;
+			}
+		}
+
+		Rio_writen(connfd, &rm.bytes, 4);
+
+		// send file contents
+		FILE* f = fopen(rm.fileName, "r");
+		fread(rm.file, 1, rm.bytes, f);
+		Rio_writen(connfd, &rm.file, rm.bytes);
+		fclose(f);
+		
+		
+
 	}
 
 	Close(connfd);

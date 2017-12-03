@@ -20,7 +20,6 @@ int main(int argc, char **argv)
 {
     int clientfd, port, key;
     char *host;
-    FILE* f;
     string input = "";
     rio_t rio;
 
@@ -83,17 +82,32 @@ int main(int argc, char **argv)
 		Rio_writen(clientfd, &cm.fileName, 80);
 		Rio_writen(clientfd, &cm.bytes, 4);
 	
-		cout << sizeof(char) << endl;
-		f = fopen(cm.fileName, "r");
-		//fclose(f);
+		// send file contents
+		FILE* f = fopen(cm.fileName, "r");
 		fread(cm.file, 1, cm.bytes, f);
-		cout << cm.file << endl;
 		Rio_writen(clientfd, &cm.file, cm.bytes);
-		cout << cm.file << endl;
 		fclose(f);
 
 	}
+	else if(tokens[0] == "cget"){
 
+		cm.type = 2;
+		cm.k = key;
+
+		strcpy(cm.fileName,tokens[1].c_str());
+
+		Rio_writen(clientfd, &cm.type, 4);
+		Rio_writen(clientfd, &cm.k, 4);
+		Rio_writen(clientfd, &cm.fileName, 80);
+		
+		FILE* f = fopen(cm.fileName, "w");
+		Rio_readn(clientfd, &cm.bytes, 4);
+		Rio_readn(clientfd, &cm.file, cm.bytes);
+		fwrite(cm.file, 1, cm.bytes, f);
+		fclose(f);
+		
+
+	}
 	
     }
 
