@@ -13,13 +13,14 @@ struct clientMsg {
    unsigned int k;
    unsigned int bytes;
    char fileName[80];
+   char file[100000];
 } cm;
 
 int main(int argc, char **argv) 
 {
     int clientfd, port, key;
     char *host;
-
+    FILE* f;
     string input = "";
     rio_t rio;
 
@@ -60,7 +61,7 @@ int main(int argc, char **argv)
 		int size = 0;
 		
 		fileDesc = open(cm.fileName, O_RDONLY);
-
+		
 		if(fileDesc < 0){
 			cout << "File not found. " << endl;
 			break;
@@ -75,14 +76,20 @@ int main(int argc, char **argv)
 			}
 		}
 		
-		// second param: what you are passing
-//		Rio_writen(clientfd, &cm, size); // send struct
-//		cout << "file: " << cm.fileName << endl;
+
 
 		Rio_writen(clientfd, &cm.type, 4);
 		Rio_writen(clientfd, &cm.k, 4);
 		Rio_writen(clientfd, &cm.fileName, 80);
 		Rio_writen(clientfd, &cm.bytes, 4);
+	
+		cout << sizeof(char) << endl;
+		f = fopen(cm.fileName, "r");
+		//fclose(f);
+		fread(cm.file, 1, cm.bytes, f);
+		cout << cm.file << endl;
+		Rio_writen(clientfd, &cm.file, cm.bytes);
+		cout << cm.file << endl;
 
 	}
 

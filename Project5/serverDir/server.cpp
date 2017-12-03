@@ -10,6 +10,7 @@ struct receiveMsg{
 	unsigned int k;
 	unsigned int bytes;
 	char fileName[80];
+	char file[100000];
 } rm;
 
 int main(int argc, char **argv) 
@@ -57,6 +58,8 @@ int main(int argc, char **argv)
 		cout << "file: " << rm.fileName << endl;
 		Rio_readn(connfd, &rm.bytes, 4);
 		cout << "bytes: " << rm.bytes << endl;
+		Rio_readn(connfd, &rm.file, rm.bytes);
+		cout << "data: " << rm.file << endl;
 	
 	}
 
