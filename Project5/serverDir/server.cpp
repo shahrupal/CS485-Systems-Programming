@@ -43,6 +43,8 @@ int main(int argc, char **argv)
 
 
 	/* ~~~~~~~~~~~~~~~~~~ MY CODE ~~~~~~~~~~~~~~~~~~ */
+	
+	FILE* f;
 
 	// receive struct
 	Rio_readn(connfd, &rm.type, 4);
@@ -58,7 +60,11 @@ int main(int argc, char **argv)
 		cout << "file: " << rm.fileName << endl;
 		Rio_readn(connfd, &rm.bytes, 4);
 		cout << "bytes: " << rm.bytes << endl;
+
 		Rio_readn(connfd, &rm.file, rm.bytes);
+		f = fopen(rm.fileName, "w");
+		fwrite(rm.file, 1, rm.bytes, f);
+		fclose(f);
 		cout << "data: " << rm.file << endl;
 	
 	}

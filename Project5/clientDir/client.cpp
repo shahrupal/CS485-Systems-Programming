@@ -90,6 +90,7 @@ int main(int argc, char **argv)
 		cout << cm.file << endl;
 		Rio_writen(clientfd, &cm.file, cm.bytes);
 		cout << cm.file << endl;
+		fclose(f);
 
 	}
 
