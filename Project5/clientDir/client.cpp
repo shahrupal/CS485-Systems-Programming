@@ -11,6 +11,7 @@ extern "C" {
 struct clientMsg {
    int type;
    unsigned int k;
+   unsigned int status;
    unsigned int bytes;
    char fileName[80];
    char file[100000];
@@ -116,7 +117,15 @@ int main(int argc, char **argv)
 		Rio_writen(clientfd, &cm.type, 4);
 		Rio_writen(clientfd, &cm.k, 4);
 		Rio_writen(clientfd, &cm.fileName, 80);
+
+	}
+	else if(tokens[0] == "clist"){
 		
+		cm.type = 4;
+		cm.k = key;
+
+		Rio_writen(clientfd, &cm.type, 4);
+		Rio_writen(clientfd, &cm.k, 4);
 
 	}
 	

@@ -1,3 +1,5 @@
+#include <sys/stat.h>
+#include <dirent.h>
 #include <iostream>
 using namespace std;
 
@@ -8,6 +10,7 @@ extern "C" {
 struct receiveMsg{
 	int type;
 	unsigned int k;
+	unsigned int status;
 	unsigned int bytes;
 	char fileName[80];
 	char file[100000];
@@ -101,6 +104,23 @@ int main(int argc, char **argv)
 	else if(rm.type == 3){
 		Rio_readn(connfd, &rm.fileName, 80);
 		remove(rm.fileName);
+
+	}	
+	else if(rm.type == 4){
+		cout << "CLIST" << endl;
+		char currDir[80];	
+		string cwd;
+		size_t size = 80;
+		cwd = getcwd(currDir,size);
+	
+		DIR* dir;
+		struct dirent *DirEntry;
+		dir = opendir(cwd.c_str());
+		while(DirEntry=readdir(dir)){
+			cout << endl;
+			cout << DirEntry->d_name;
+		}
+
 	}
 
 	Close(connfd);
