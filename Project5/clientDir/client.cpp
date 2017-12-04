@@ -48,6 +48,8 @@ int main(int argc, char **argv)
 	while(iss >> temp) {
 		tokens.push_back(temp);
 	}
+	
+	cout << tokens[0] << endl;
 
 	if(tokens.empty()) { }
 	else if(tokens[0] == "cput"){
@@ -62,10 +64,10 @@ int main(int argc, char **argv)
 		int size = 0;
 		
 		fileDesc = open(cm.fileName, O_RDONLY);
-		
+		cm.status = 0;		
+
 		if(fileDesc < 0){
-			cout << "File not found. " << endl;
-			break;
+			cm.status = -1;
 		}
 		else{
 			if(fstat(fileDesc, &statStruct) == 0){
@@ -73,22 +75,26 @@ int main(int argc, char **argv)
 				cm.bytes = size;
 			}
 			else{
-				cout << "Error: fstat()" << endl;
+				cm.status = -1;
 			}
 		}
-		
-
 
 		Rio_writen(clientfd, &cm.type, 4);
 		Rio_writen(clientfd, &cm.k, 4);
-		Rio_writen(clientfd, &cm.fileName, 80);
-		Rio_writen(clientfd, &cm.bytes, 4);
-	
-		// send file contents
-		FILE* f = fopen(cm.fileName, "r");
-		fread(cm.file, 1, cm.bytes, f);
-		Rio_writen(clientfd, &cm.file, cm.bytes);
-		fclose(f);
+		Rio_writen(clientfd, &cm.status, 4);
+
+		if(cm.status != -1){
+
+			Rio_writen(clientfd, &cm.fileName, 80);
+			Rio_writen(clientfd, &cm.bytes, 4);
+		
+			// send file contents
+			FILE* f = fopen(cm.fileName, "r");
+			fread(cm.file, 1, cm.bytes, f);
+			Rio_writen(clientfd, &cm.file, cm.bytes);
+			fclose(f);
+
+		}
 
 	}
 	else if(tokens[0] == "cget"){
@@ -129,14 +135,21 @@ int main(int argc, char **argv)
 		Rio_writen(clientfd, &cm.k, 4);
 	
 		Rio_readn(clientfd, &cm.fileNum, 4);
-//		cout << cm.fileNum << endl;
 
 		for(int i = 0; i < cm.fileNum; i++){
 			Rio_readn(clientfd, &cm.fileName, 80);
 			cout << cm.fileName << endl;
 		}
 	}
-	
+	else if(tokens[0] == "quit"){
+		Close(clientfd);
+		exit(0);	
+	}
+	else{
+		cout << "Status: Error!" << endl;
+		Close(clientfd);
+		exit(0);
+	}
     }
 
 
