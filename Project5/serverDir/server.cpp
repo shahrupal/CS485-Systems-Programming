@@ -82,10 +82,6 @@ int main(int argc, char **argv)
 
 			// receive status and file name from client
 			Rio_readn(connfd, &rm.status, 4);
-			Rio_readn(connfd, &rm.fileName, 80);
-
-			// output file name
-			cout << "Filename: " << rm.fileName << endl;					
 
 			// if status is a failure, output so
 			if(rm.status == -1){
@@ -94,6 +90,10 @@ int main(int argc, char **argv)
 			// if status is a success, output so and 'transfer' file 
 			else{
 				cout << "Status: Success!" << endl;
+				
+				// receive and output file name
+				Rio_readn(connfd, &rm.fileName, 80);
+				cout << "Filename: " << rm.fileName << endl;
 		
 				// receive file size
 				Rio_readn(connfd, &rm.bytes, 4);	
@@ -211,9 +211,7 @@ int main(int argc, char **argv)
 			// get current working directory
 			cwd = getcwd(currDir,size);
 		
-			// epen current directory
-			DIR* directory;
-			struct dirent *directoryEntry;
+			// open current directory
 			directory = opendir(cwd.c_str());
 
 			// count number of files in current directory
