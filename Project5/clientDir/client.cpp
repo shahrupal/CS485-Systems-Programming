@@ -38,8 +38,10 @@ int main(int argc, char **argv)
     clientfd = Open_clientfd(host, port);
     Rio_readinitb(&rio, clientfd);
 
+    cout << "> ";
     while(getline(cin, input)) {
 	
+//	cout << "> ";
 	vector<string> tokens;
 	string temp = "";
 
@@ -48,8 +50,6 @@ int main(int argc, char **argv)
 	while(iss >> temp) {
 		tokens.push_back(temp);
 	}
-	
-	cout << tokens[0] << endl;
 
 	if(tokens.empty()) { }
 	else if(tokens[0] == "cput"){
@@ -146,10 +146,11 @@ int main(int argc, char **argv)
 		exit(0);	
 	}
 	else{
-		cout << "Status: Error!" << endl;
+		Rio_writen(clientfd, &cm.status, 4);
 		Close(clientfd);
 		exit(0);
 	}
+	cout << "> ";
     }
 
 

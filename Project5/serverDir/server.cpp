@@ -33,13 +33,7 @@ int main(int argc, char **argv)
 
     listenfd = Open_listenfd(port);
 
-//    clientlen = sizeof(clientaddr);
-//    connfd = Accept(listenfd, (SA *)&clientaddr, &clientlen);
-//    hp = Gethostbyaddr((const char *)&clientaddr.sin_addr.s_addr, sizeof(clientaddr.sin_addr.s_addr), AF_INET);
-//    haddrp = inet_ntoa(clientaddr.sin_addr);
-//    printf("server connected to %s (%s)\n", hp->h_name, haddrp);
-    
-   
+ 
      while (1) {
 
 	clientlen = sizeof(clientaddr);
@@ -54,17 +48,21 @@ int main(int argc, char **argv)
 
 	/* ~~~~~~~~~~~~~~~~~~ MY CODE ~~~~~~~~~~~~~~~~~~ */
 	bool cont = true;
+	cout << "--------------------" << endl;
 	while(cont){
 
 		// receive struct
 		Rio_readn(connfd, &rm.type, 4);
-		cout << "type: " << rm.type << endl;
 		Rio_readn(connfd, &rm.k, 4);
-		cout << "key: " << rm.k << endl;
+
+		cout << "Secret Key: " << rm.k << endl;
+
 	
 		// if "cput"
 		if(rm.type == 1){
 	
+			cout << "Request Type: STORE" << endl;
+
 			Rio_readn(connfd, &rm.status, 4);
 			if(rm.status == -1){
 				cout << "Status: Failure!" << endl;
@@ -88,6 +86,8 @@ int main(int argc, char **argv)
 		}
 		else if(rm.type == 2){
 		
+			cout << "Request Type: RETRIEVE" << endl;
+
 			struct stat statStruct;
 			int fileDesc;
 			int size = 0;
@@ -99,6 +99,7 @@ int main(int argc, char **argv)
 	
 			if(fileDesc < 0){
 				rm.status = -1;
+				cout << "Status: Failure!" << endl;
 			}
 			else{
 				if(fstat(fileDesc, &statStruct) == 0){
@@ -107,10 +108,13 @@ int main(int argc, char **argv)
 				}
 				else{
 					rm.status = -1;
+					cout << "Status: Failure!" << endl;
 				}
 			}
 		
 			if(rm.status != -1){
+
+				cout << "Status: Success!" << endl;
 				Rio_writen(connfd, &rm.bytes, 4);
 	
 				// send file contents
@@ -121,14 +125,24 @@ int main(int argc, char **argv)
 			}
 		}
 		else if(rm.type == 3){
+
+			cout << "Request Type: DELETE" << endl;
+
 			rm.status = 0;
 			Rio_readn(connfd, &rm.fileName, 80);
 			if(remove(rm.fileName) != 0 ){
+				cout << "Status: Failure!" << endl;
 				rm.status = -1;
+			}
+			else{
+				cout << "Status: Success!" << endl;
 			}
 		}	
 		else if(rm.type == 4){
 	
+			cout << "Request Type: LIST" << endl;
+			cout << "Status: Success!" << endl;
+
 			int count = 0;
 			char currDir[80];	
 			string cwd;
@@ -150,15 +164,17 @@ int main(int argc, char **argv)
 				strcpy(rm.fileName, DirEntry->d_name);
 				Rio_writen(connfd, &rm.fileName, 80);
 			}
+
 	
 		}
 		else{
+			cout << "Status: Failure!" << endl;
 			cont = false;
 			Close(connfd);
 			exit(0);
 		}
 	
-	
+		cout << "-------------------" << endl;
 //		Close(connfd);
 	}
     }
