@@ -1,12 +1,15 @@
+// include libraries
 #include <sys/stat.h>
 #include <dirent.h>
 #include <iostream>
 using namespace std;
 
+// converts to C++
 extern "C" {
     #include "csapp.h"
 }
 
+// creates struct to hold data that needs to be passed/imported from client
 struct receiveMsg{
 	int type;
 	unsigned int k;
@@ -17,38 +20,41 @@ struct receiveMsg{
 	int fileNum;
 } rm;
 
+
+// main
 int main(int argc, char **argv) 
 {
+
+    // intialize variables
     int listenfd, connfd, port;
     socklen_t clientlen;
     struct sockaddr_in clientaddr;
     struct hostent *hp;
     char *haddrp;
-    bool correctKey = true;
+
+    // show error if not enough arguments in command line
     if (argc != 3) {
 	fprintf(stderr, "usage: %s <TCPport> <SecretKey>\n", argv[0]);
 	exit(0);
     }
 
+    // store and open port from command line
     port = atoi(argv[1]);
     listenfd = Open_listenfd(port);
 
      while (1) {
 
+	// create connection
 	clientlen = sizeof(clientaddr);
 	connfd = Accept(listenfd, (SA *)&clientaddr, &clientlen);
-
-	/* Determine the domain name and IP address of the client */
 	hp = Gethostbyaddr((const char *)&clientaddr.sin_addr.s_addr, 
 			   sizeof(clientaddr.sin_addr.s_addr), AF_INET);
 	haddrp = inet_ntoa(clientaddr.sin_addr);
 	printf("server connected to %s (%s)\n", hp->h_name, haddrp);
 
-
-	/* ~~~~~~~~~~~~~~~~~~ MY CODE ~~~~~~~~~~~~~~~~~~ */
-
-	int key = atoi(argv[2]);
-	Rio_readn(connfd, &rm.k, 4);
+	// compare client and server key, quit connection if not a match
+	int key = atoi(argv[2]);  // store key from command line
+	Rio_readn(connfd, &rm.k, 4);  // store key from client
 	if(rm.k != key){
 		cout << "Error: incorrect secret key." << endl;
 		exit(0);
@@ -56,32 +62,40 @@ int main(int argc, char **argv)
 
 	bool cont = true;
 	cout << "--------------------" << endl;
+
+	// continue with loop until set to false
 	while(cont){
 
-		// receive struct
+		// receive type and key from client
 		Rio_readn(connfd, &rm.type, 4);
 		Rio_readn(connfd, &rm.k, 4);
 
+		// output secret key
 		cout << "Secret Key: " << rm.k << endl;
 
 	
-		// if "cput"
+		// if user uses 'cput' command
 		if(rm.type == 1){
 	
+			// output type of command
 			cout << "Request Type: STORE" << endl;
+
+			// receive status and file name from client
 			Rio_readn(connfd, &rm.status, 4);
 			Rio_readn(connfd, &rm.fileName, 80);
-			cout << "Filename: " << rm.fileName << endl;	
-				
+
+			// output file name
+			cout << "Filename: " << rm.fileName << endl;					
+
+			// if status is a failure, output so
 			if(rm.status == -1){
 				cout << "Status: Failure!" << endl;
 			}
+			// if status is a success, output so and 'transfer' file 
 			else{
 				cout << "Status: Success!" << endl;
 		
 				// receive file size
-//				Rio_readn(connfd, &rm.fileName, 80);
-//				cout << "Filename: " << rm.fileName << endl;
 				Rio_readn(connfd, &rm.bytes, 4);	
 				Rio_readn(connfd, &rm.file, rm.bytes);
 			
