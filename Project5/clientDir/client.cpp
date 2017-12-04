@@ -1,8 +1,3 @@
-// Author: Rupal Shah
-// Course: CS485
-// Assignment: Project 5
-
-
 // import libraries
 #include <sys/stat.h> 
 #include <vector>
@@ -73,7 +68,7 @@ int main(int argc, char **argv)
 	// if input blank line, do nothing
 	if(tokens.empty()) { }
 
-        // if user commands cput
+        // if user commands cput, "send file to server"
 	else if(tokens[0] == "cput"){
 
 		// set type to 1, set key to command line key
@@ -131,73 +126,113 @@ int main(int argc, char **argv)
 		}
 
 	}
+
+	// if user commands cget, "get file from server"
 	else if(tokens[0] == "cget"){
 
+		// set type to 2, set key to command line key
 		cm.type = 2;
 		cm.k = key;
 
+		// use second argument as file name
 		strcpy(cm.fileName,tokens[1].c_str());
 
+		// send type, key, and file name to server
 		Rio_writen(clientfd, &cm.type, 4);
 		Rio_writen(clientfd, &cm.k, 4);
 		Rio_writen(clientfd, &cm.fileName, 80);
 		
+		// receive status
 		Rio_readn(clientfd, &cm.status, 4);
+	
+		// if status is success
 		if(cm.status == 0){
+
+			// create file with file name from command line
 			FILE* f = fopen(cm.fileName, "w");
+
+			// receive number of bytes and file contents (from server) of specified file 
 			Rio_readn(clientfd, &cm.bytes, 4);
 			Rio_readn(clientfd, &cm.file, cm.bytes);
+
+			// create file using server file information
 			fwrite(cm.file, 1, cm.bytes, f);
 			fclose(f);	
+
 		}
 
 	}
+
+	// if user commands cdelete, "remove file from server"
 	else if(tokens[0] == "cdelete"){
 		
+		// set type to 3, set key to command line key
 		cm.type = 3;
 		cm.k = key;
 
+		// use second argument as file name
 		strcpy(cm.fileName,tokens[1].c_str());
+
+		// send type, key, and file name to server
 		Rio_writen(clientfd, &cm.type, 4);
 		Rio_writen(clientfd, &cm.k, 4);
 		Rio_writen(clientfd, &cm.fileName, 80);
 
 	}
+
+	// if user commands clist, "list all files in server current directory"
 	else if(tokens[0] == "clist"){
 		
+		// set type to 4, set key to command line key
 		cm.type = 4;
 		cm.k = key;
 
+		// send type and key to server
 		Rio_writen(clientfd, &cm.type, 4);
 		Rio_writen(clientfd, &cm.k, 4);
 	
+		// receive number of files in server current directory
 		Rio_readn(clientfd, &cm.fileNum, 4);
 
+		// receive each name of file in server directory and output to user
 		for(int i = 0; i < cm.fileNum; i++){
 			Rio_readn(clientfd, &cm.fileName, 80);
 			cout << cm.fileName << endl;
 		}
+
 	}
+
+	// if user commands quit, "close connection"
 	else if(tokens[0] == "quit"){
+
+		// set type to -1 (invalid), set key to command line key
 		cm.type = -1;
 		cm.k = key;
 
+		// sent type and key to server
 		Rio_writen(clientfd, &cm.type, 4);
 		Rio_writen(clientfd, &cm.k, 4);
 
+		// close client
 		Close(clientfd);
-		exit(0);	
+		exit(0);
+	
 	}
+
+	// if user commands invalid command, "close connection"
 	else{
-		Rio_writen(clientfd, &cm.status, 4);
 		Close(clientfd);
 		exit(0);
 	}
+
+	// continue to prompt user
 	cout << "> ";
+
     }
 
-
+    // close client
     Close(clientfd); 
     exit(0);
+
 }
 

@@ -105,57 +105,83 @@ int main(int argc, char **argv)
 				fclose(f);
 			}
 		}
+
+		// if user uses 'cget' command
 		else if(rm.type == 2){
 		
+			// output type of command
 			cout << "Request Type: RETRIEVE" << endl;
 
+			// initialize variables
 			struct stat statStruct;
 			int fileDesc;
 			int size = 0;
 			
+			// receive and output file name
 			Rio_readn(connfd, &rm.fileName, 80);
 			cout << "Filename: " << rm.fileName << endl;
+
+			// open file with given file name
 			fileDesc = open(rm.fileName, O_RDONLY);
 	
+			// set default status to success
 			rm.status = 0;
 	
+			// if file does not exit/open, set status to failure
 			if(fileDesc < 0){
 				rm.status = -1;
 				cout << "Status: Failure!" << endl;
 			}
 			else{
+				// find size of file
 				if(fstat(fileDesc, &statStruct) == 0){
 					size = statStruct.st_size;
 					rm.bytes = size;
 				}
+				// if fstat() fails, status to failure
 				else{
 					rm.status = -1;
 					cout << "Status: Failure!" << endl;
 				}
 			}
 
+			// send status to client
 			Rio_writen(connfd, &rm.status, 4);
 		
+			// if status is success
 			if(rm.status != -1){
-
+		
+				// output to user
 				cout << "Status: Success!" << endl;
+
+				// send size of file to client
 				Rio_writen(connfd, &rm.bytes, 4);
 	
-				// send file contents
+				// send file contents to client
 				FILE* f = fopen(rm.fileName, "r");
 				fread(rm.file, 1, rm.bytes, f);
 				Rio_writen(connfd, &rm.file, rm.bytes);
 				fclose(f);
+
 			}
+
 		}
+
+		// if user uses 'cdelete' command
 		else if(rm.type == 3){
 
+			// output request type
 			cout << "Request Type: DELETE" << endl;
 			
+			// set default status to success
 			rm.status = 0;
+
+			// receive and output file name from client
 			Rio_readn(connfd, &rm.fileName, 80);
 			cout << "Filename: " << rm.fileName << endl;
 
+			// remove file from current directory
+			// if file does not exist, set status to failure
 			if(remove(rm.fileName) != 0 ){
 				cout << "Status: Failure!" << endl;
 				rm.status = -1;
@@ -163,51 +189,72 @@ int main(int argc, char **argv)
 			else{
 				cout << "Status: Success!" << endl;
 			}
+
 		}	
+
+		// if user uses 'clist' command
 		else if(rm.type == 4){
 	
+			// output request type, status, and file name 
 			cout << "Request Type: LIST" << endl;
 			cout << "Status: Success!" << endl;
 			cout << "Filename: NONE" << endl;
 
+			// initialize variables
 			int count = 0;
 			char currDir[80];	
 			string cwd;
 			size_t size = 80;
+			DIR* directory;
+			struct dirent *directoryEntry;
+
+			// get current working directory
 			cwd = getcwd(currDir,size);
 		
-			DIR* dir;
-			struct dirent *DirEntry;
-			dir = opendir(cwd.c_str());
-			while(DirEntry=readdir(dir)){
+			// epen current directory
+			DIR* directory;
+			struct dirent *directoryEntry;
+			directory = opendir(cwd.c_str());
+
+			// count number of files in current directory
+			while(directoryEntry = readdir(directory)){
  				count++;
 			}
+
+			// send number of files to client
 			rm.fileNum = count;
 			Rio_writen(connfd, &rm.fileNum, 4);
-			closedir(dir);
+
+			// close directory
+			closedir(directory);
 	
-			dir = opendir(cwd.c_str());
-			while(DirEntry=readdir(dir)){
-				strcpy(rm.fileName, DirEntry->d_name);
+			// re-open current directory
+			directory = opendir(cwd.c_str());
+		
+			// send over each file name to client
+			while(directoryEntry = readdir(directory)){
+				strcpy(rm.fileName, directoryEntry->d_name);
 				Rio_writen(connfd, &rm.fileName, 80);
 			}
-			closedir(dir);
 
-	
+			// close directory
+			closedir(directory);
+
 		}
+
+		// if user uses invalid command, close server
 		else{
-//			cout << "Status: Failure!" << endl;
 			cont = false;
 			Close(connfd);
 			exit(0);
 		}
 	
 		cout << "-------------------" << endl;
-//		Close(connfd);
 	}
     }
-	
-	Close(connfd);
-	exit(0);
+
+    // close server	
+    Close(connfd);
+    exit(0);
+
 }
- 	/* $end echoserverimain */
