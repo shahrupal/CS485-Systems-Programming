@@ -24,16 +24,15 @@ int main(int argc, char **argv)
     struct sockaddr_in clientaddr;
     struct hostent *hp;
     char *haddrp;
-
-    if (argc != 2) {
-	fprintf(stderr, "usage: %s <port>\n", argv[0]);
+    bool correctKey = true;
+    if (argc != 3) {
+	fprintf(stderr, "usage: %s <TCPport> <SecretKey>\n", argv[0]);
 	exit(0);
     }
-    port = atoi(argv[1]);
 
+    port = atoi(argv[1]);
     listenfd = Open_listenfd(port);
 
- 
      while (1) {
 
 	clientlen = sizeof(clientaddr);
@@ -47,6 +46,14 @@ int main(int argc, char **argv)
 
 
 	/* ~~~~~~~~~~~~~~~~~~ MY CODE ~~~~~~~~~~~~~~~~~~ */
+
+	int key = atoi(argv[2]);
+	Rio_readn(connfd, &rm.k, 4);
+	if(rm.k != key){
+		cout << "Error: incorrect secret key." << endl;
+		exit(0);
+	}
+
 	bool cont = true;
 	cout << "--------------------" << endl;
 	while(cont){
@@ -62,8 +69,10 @@ int main(int argc, char **argv)
 		if(rm.type == 1){
 	
 			cout << "Request Type: STORE" << endl;
-
 			Rio_readn(connfd, &rm.status, 4);
+			Rio_readn(connfd, &rm.fileName, 80);
+			cout << "Filename: " << rm.fileName << endl;	
+				
 			if(rm.status == -1){
 				cout << "Status: Failure!" << endl;
 			}
@@ -71,11 +80,9 @@ int main(int argc, char **argv)
 				cout << "Status: Success!" << endl;
 		
 				// receive file size
-				Rio_readn(connfd, &rm.fileName, 80);
-				cout << "file: " << rm.fileName << endl;
-				Rio_readn(connfd, &rm.bytes, 4);
-				cout << "bytes: " << rm.bytes << endl;
-	
+//				Rio_readn(connfd, &rm.fileName, 80);
+//				cout << "Filename: " << rm.fileName << endl;
+				Rio_readn(connfd, &rm.bytes, 4);	
 				Rio_readn(connfd, &rm.file, rm.bytes);
 			
 				// creates file with given name and contents
@@ -93,6 +100,7 @@ int main(int argc, char **argv)
 			int size = 0;
 			
 			Rio_readn(connfd, &rm.fileName, 80);
+			cout << "Filename: " << rm.fileName << endl;
 			fileDesc = open(rm.fileName, O_RDONLY);
 	
 			rm.status = 0;
@@ -111,6 +119,8 @@ int main(int argc, char **argv)
 					cout << "Status: Failure!" << endl;
 				}
 			}
+
+			Rio_writen(connfd, &rm.status, 4);
 		
 			if(rm.status != -1){
 
@@ -127,9 +137,11 @@ int main(int argc, char **argv)
 		else if(rm.type == 3){
 
 			cout << "Request Type: DELETE" << endl;
-
+			
 			rm.status = 0;
 			Rio_readn(connfd, &rm.fileName, 80);
+			cout << "Filename: " << rm.fileName << endl;
+
 			if(remove(rm.fileName) != 0 ){
 				cout << "Status: Failure!" << endl;
 				rm.status = -1;
@@ -142,6 +154,7 @@ int main(int argc, char **argv)
 	
 			cout << "Request Type: LIST" << endl;
 			cout << "Status: Success!" << endl;
+			cout << "Filename: NONE" << endl;
 
 			int count = 0;
 			char currDir[80];	
@@ -164,11 +177,12 @@ int main(int argc, char **argv)
 				strcpy(rm.fileName, DirEntry->d_name);
 				Rio_writen(connfd, &rm.fileName, 80);
 			}
+			closedir(dir);
 
 	
 		}
 		else{
-			cout << "Status: Failure!" << endl;
+//			cout << "Status: Failure!" << endl;
 			cont = false;
 			Close(connfd);
 			exit(0);

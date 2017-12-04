@@ -38,10 +38,12 @@ int main(int argc, char **argv)
     clientfd = Open_clientfd(host, port);
     Rio_readinitb(&rio, clientfd);
 
+    cm.k = key;
+    Rio_writen(clientfd, &cm.k, 4);
+
     cout << "> ";
     while(getline(cin, input)) {
 	
-//	cout << "> ";
 	vector<string> tokens;
 	string temp = "";
 
@@ -108,11 +110,14 @@ int main(int argc, char **argv)
 		Rio_writen(clientfd, &cm.k, 4);
 		Rio_writen(clientfd, &cm.fileName, 80);
 		
-		FILE* f = fopen(cm.fileName, "w");
-		Rio_readn(clientfd, &cm.bytes, 4);
-		Rio_readn(clientfd, &cm.file, cm.bytes);
-		fwrite(cm.file, 1, cm.bytes, f);
-		fclose(f);	
+		Rio_readn(clientfd, &cm.status, 4);
+		if(cm.status == 0){
+			FILE* f = fopen(cm.fileName, "w");
+			Rio_readn(clientfd, &cm.bytes, 4);
+			Rio_readn(clientfd, &cm.file, cm.bytes);
+			fwrite(cm.file, 1, cm.bytes, f);
+			fclose(f);	
+		}
 
 	}
 	else if(tokens[0] == "cdelete"){
@@ -142,6 +147,12 @@ int main(int argc, char **argv)
 		}
 	}
 	else if(tokens[0] == "quit"){
+		cm.type = -1;
+		cm.k = key;
+
+		Rio_writen(clientfd, &cm.type, 4);
+		Rio_writen(clientfd, &cm.k, 4);
+
 		Close(clientfd);
 		exit(0);	
 	}
