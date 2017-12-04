@@ -15,6 +15,7 @@ struct clientMsg {
    unsigned int bytes;
    char fileName[80];
    char file[100000];
+   int fileNum;
 } cm;
 
 int main(int argc, char **argv) 
@@ -126,7 +127,14 @@ int main(int argc, char **argv)
 
 		Rio_writen(clientfd, &cm.type, 4);
 		Rio_writen(clientfd, &cm.k, 4);
+	
+		Rio_readn(clientfd, &cm.fileNum, 4);
+//		cout << cm.fileNum << endl;
 
+		for(int i = 0; i < cm.fileNum; i++){
+			Rio_readn(clientfd, &cm.fileName, 80);
+			cout << cm.fileName << endl;
+		}
 	}
 	
     }

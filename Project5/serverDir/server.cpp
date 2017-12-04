@@ -14,6 +14,7 @@ struct receiveMsg{
 	unsigned int bytes;
 	char fileName[80];
 	char file[100000];
+	int fileNum;
 } rm;
 
 int main(int argc, char **argv) 
@@ -107,6 +108,7 @@ int main(int argc, char **argv)
 
 	}	
 	else if(rm.type == 4){
+		int count = 0;
 		cout << "CLIST" << endl;
 		char currDir[80];	
 		string cwd;
@@ -117,8 +119,19 @@ int main(int argc, char **argv)
 		struct dirent *DirEntry;
 		dir = opendir(cwd.c_str());
 		while(DirEntry=readdir(dir)){
-			cout << endl;
-			cout << DirEntry->d_name;
+//			cout << endl;
+//			cout << DirEntry->d_name;
+ 			count++;
+		}
+		rm.fileNum = count;
+		Rio_writen(connfd, &rm.fileNum, 4);
+		closedir(dir);
+
+		dir = opendir(cwd.c_str());
+		while(DirEntry=readdir(dir)){
+			strcpy(rm.fileName, DirEntry->d_name);
+			cout << rm.fileName << endl;
+			Rio_writen(connfd, &rm.fileName, 80);
 		}
 
 	}
