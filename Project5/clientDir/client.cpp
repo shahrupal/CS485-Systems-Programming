@@ -51,6 +51,12 @@ int main(int argc, char **argv)
     cm.k = key;
     Rio_writen(clientfd, &cm.k, 4);
 
+    Rio_readn(clientfd, &key, 4);
+    if(cm.k != key){
+	cout << "Error: incorrect secret key." << endl;
+	exit(0);
+    }
+
     // continue loop for each command
     cout << "> ";
     while(getline(cin, input)) {

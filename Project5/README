@@ -1,0 +1,25 @@
+Author: Rupal Shah
+Course: CS485 Systems Programming
+Assignment: Program 5 Network Programming and System I/O
+
+Description:
+- This program uses a client and server to communicate with each other. 
+- First, the secret key must match for both the client and server, otherwise both sides will quit.
+- If the secret key matches, the user may input the following commands via the client-side:
+  * cput <filename>
+  * cget <filename>
+  * cdelete <filename>
+  * clist
+- Both the client and server will work together to undergo these commands.
+- The server will output the following for each command requested by the user:
+  * type
+  * key
+  * status
+  * filename
+
+
+Limitations:
+- There is very limited input validation. My program assumes the user will correctly implement inputs. For example, it does not account for if a user inputs an incorrect amount of arguments for the 5 commands. 
+- Program quits when user inputs invalid command.
+- The 'clist' command always outputs as a success -- I could not find any way that an error would occur.
+- The 'cput' command does not output a filename on the server-side if invalid.

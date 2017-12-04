@@ -55,6 +55,7 @@ int main(int argc, char **argv)
 	// compare client and server key, quit connection if not a match
 	int key = atoi(argv[2]);  // store key from command line
 	Rio_readn(connfd, &rm.k, 4);  // store key from client
+	Rio_writen(connfd, &key, 4);  // send key to client
 	if(rm.k != key){
 		cout << "Error: incorrect secret key." << endl;
 		exit(0);
